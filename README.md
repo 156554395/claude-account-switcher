@@ -315,12 +315,10 @@ $ claude-test           # 测试延迟: 89ms
 
 ## ⚡ 5 秒快速开始
 
-### 📦 安装方式
-
-#### 方式一: 使用 npm 全局安装 (推荐)
+### 📦 安装
 
 ```bash
-# 全局安装
+# 使用 npm
 npm install -g claude-account-switcher
 
 # 或使用 pnpm
@@ -330,27 +328,16 @@ pnpm install -g claude-account-switcher
 yarn global add claude-account-switcher
 ```
 
-#### 方式二: 从源码安装
-
-```bash
-git clone https://github.com/156554395/claude-account-switcher.git
-cd claude-account-switcher
-pnpm install
-npm link  # 或使用: sudo npm link
-```
+> 💡 **开发者**: 如果你想从源码安装或参与开发，请查看 [开发文档 (DEVELOPMENT.md)](DEVELOPMENT.md)
 
 ---
 
-### 🚀 快速上手
+### 🚀 三步开始使用
 
 #### 步骤 1: 添加你的第一个账号 (5 秒)
 
 ```bash
-# 如果是 npm 全局安装
 claude-account add personal sk-ant-your-key-here
-
-# 如果是源码安装
-node src/index.js add personal sk-ant-your-key-here
 ```
 
 #### 步骤 2: 设置切换别名 (一次性,10 秒)
@@ -358,17 +345,10 @@ node src/index.js add personal sk-ant-your-key-here
 在 `~/.zshrc` 或 `~/.bashrc` 添加:
 
 ```bash
-# npm 全局安装方式
 alias ca-switch='eval $(claude-account switch $1)'
 alias ca-list='claude-account list'
 alias ca-test='claude-account test'
 alias ca-current='claude-account current'
-
-# 或源码安装方式
-alias ca-switch='eval $(node /path/to/src/index.js switch $1)'
-alias ca-list='node /path/to/src/index.js list'
-alias ca-test='node /path/to/src/index.js test'
-alias ca-current='node /path/to/src/index.js current'
 ```
 
 然后刷新配置:
@@ -388,8 +368,6 @@ ca-switch personal
 ---
 
 ## 📖 详细使用指南
-
-> 💡 **说明**: 以下示例使用 `claude-account` 命令(npm 全局安装)。如果你是源码安装,请将 `claude-account` 替换为 `node src/index.js`
 
 ### 添加账号
 

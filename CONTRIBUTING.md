@@ -2,6 +2,10 @@
 
 感谢你对 Claude Account Switcher 项目的关注!
 
+> 📖 **开发者必读**: 在开始贡献之前，请先阅读 [开发文档 (DEVELOPMENT.md)](DEVELOPMENT.md) 了解项目结构、开发环境配置和调试方法。
+
+---
+
 ## 如何贡献
 
 ### 报告问题
@@ -31,15 +35,22 @@
    git checkout -b fix/your-bug-fix
    ```
 
-3. **开发**
+3. **开发和测试**
    ```bash
    # 安装依赖
    pnpm install
 
+   # 链接到全局（可选，方便测试）
+   npm link
+
    # 进行修改
    # 测试你的修改
+   claude-account [command]
+   # 或直接运行源码
    node src/index.js [command]
    ```
+
+   详细的开发调试方法请参考 [DEVELOPMENT.md](DEVELOPMENT.md)
 
 4. **提交**
    ```bash
