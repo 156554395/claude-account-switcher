@@ -315,40 +315,72 @@ $ claude-test           # 测试延迟: 89ms
 
 ## ⚡ 5 秒快速开始
 
-### 步骤 1: 安装 (10 秒)
+### 📦 安装方式
+
+#### 方式一: 使用 npm 全局安装 (推荐)
+
+```bash
+# 全局安装
+npm install -g claude-account-switcher
+
+# 或使用 pnpm
+pnpm install -g claude-account-switcher
+
+# 或使用 yarn
+yarn global add claude-account-switcher
+```
+
+#### 方式二: 从源码安装
 
 ```bash
 git clone https://github.com/156554395/claude-account-switcher.git
 cd claude-account-switcher
 pnpm install
+npm link  # 或使用: sudo npm link
 ```
 
-### 步骤 2: 添加你的第一个账号 (5 秒)
+---
+
+### 🚀 快速上手
+
+#### 步骤 1: 添加你的第一个账号 (5 秒)
 
 ```bash
+# 如果是 npm 全局安装
+claude-account add personal sk-ant-your-key-here
+
+# 如果是源码安装
 node src/index.js add personal sk-ant-your-key-here
 ```
 
-### 步骤 3: 设置别名 (一次性,10 秒)
+#### 步骤 2: 设置切换别名 (一次性,10 秒)
 
 在 `~/.zshrc` 或 `~/.bashrc` 添加:
 
 ```bash
-alias claude-switch='eval $(node /path/to/src/index.js switch $1)'
-alias claude-list='node /path/to/src/index.js list'
-alias claude-test='node /path/to/src/index.js test'
+# npm 全局安装方式
+alias ca-switch='eval $(claude-account switch $1)'
+alias ca-list='claude-account list'
+alias ca-test='claude-account test'
+alias ca-current='claude-account current'
+
+# 或源码安装方式
+alias ca-switch='eval $(node /path/to/src/index.js switch $1)'
+alias ca-list='node /path/to/src/index.js list'
+alias ca-test='node /path/to/src/index.js test'
+alias ca-current='node /path/to/src/index.js current'
 ```
 
-然后:
+然后刷新配置:
 
 ```bash
 source ~/.zshrc  # 或 source ~/.bashrc
 ```
 
-### 步骤 4: 开始使用 (3 秒)
+#### 步骤 3: 开始使用 (3 秒)
 
 ```bash
-claude-switch personal
+ca-switch personal
 ```
 
 **🎉 完成! 就是这么简单!**
@@ -357,21 +389,23 @@ claude-switch personal
 
 ## 📖 详细使用指南
 
+> 💡 **说明**: 以下示例使用 `claude-account` 命令(npm 全局安装)。如果你是源码安装,请将 `claude-account` 替换为 `node src/index.js`
+
 ### 添加账号
 
 ```bash
 # 基础用法(最简单)
-node src/index.js add personal sk-ant-xxx
+claude-account add personal sk-ant-xxx
 
 # 完整配置(推荐)
-node src/index.js add work sk-ant-xxx \
+claude-account add work sk-ant-xxx \
   --url "https://api.anthropic.com" \
   --model "claude-sonnet-4-5-20250929" \
   --small-model "claude-3-5-haiku-20241022" \
   --test  # 添加后立即测试
 
 # 添加代理账号
-node src/index.js add proxy sk-ant-xxx \
+claude-account add proxy sk-ant-xxx \
   --url "https://your-proxy.com/v1" \
   --model "qwen-plus" \
   --small-model "qwen-flash"
@@ -391,7 +425,7 @@ node src/index.js add proxy sk-ant-xxx \
 ### 列出所有账号
 
 ```bash
-node src/index.js list
+claude-account list
 ```
 
 **输出示例:**
@@ -425,11 +459,11 @@ node src/index.js list
 ### 切换账号
 
 ```bash
-# 方式 1: 直接使用(每次都要输入完整路径)
-eval $(node src/index.js switch personal)
+# 方式 1: 直接使用
+eval $(claude-account switch personal)
 
-# 方式 2: 使用别名(推荐)
-claude-switch personal
+# 方式 2: 使用别名(推荐 - 需先配置别名)
+ca-switch personal
 ```
 
 **切换后会自动设置以下环境变量:**
@@ -444,7 +478,7 @@ claude-switch personal
 ### 查看当前账号
 
 ```bash
-node src/index.js current
+claude-account current
 ```
 
 **输出示例:**
@@ -461,10 +495,10 @@ Small:    claude-3-5-haiku-20241022
 
 ```bash
 # 测试指定账号
-node src/index.js test personal
+claude-account test personal
 
 # 测试当前账号
-node src/index.js test
+claude-account test
 ```
 
 **输出示例:**
@@ -489,11 +523,11 @@ node src/index.js test
 
 ```bash
 # 交互式删除(安全)
-node src/index.js remove work
+claude-account remove work
 ? 确定要删除账号 'work' 吗? (y/N)
 
 # 强制删除(跳过确认)
-node src/index.js remove work --force
+claude-account remove work --force
 ```
 
 **💡 提示:** 当前正在使用的账号不能被删除
@@ -504,14 +538,14 @@ node src/index.js remove work --force
 
 | 命令 | 说明 | 示例 |
 |------|------|------|
-| `add` | 添加新账号 | `add personal sk-ant-xxx` |
-| `list` | 列出所有账号 | `list` |
-| `switch` | 切换账号 | `switch personal` |
-| `current` | 查看当前账号 | `current` |
-| `test` | 测试账号 | `test personal` |
-| `remove` | 删除账号 | `remove work` |
-| `--help` | 显示帮助 | `--help` |
-| `--version` | 显示版本 | `--version` |
+| `add` | 添加新账号 | `claude-account add personal sk-ant-xxx` |
+| `list` | 列出所有账号 | `claude-account list` |
+| `switch` | 切换账号 | `claude-account switch personal` |
+| `current` | 查看当前账号 | `claude-account current` |
+| `test` | 测试账号 | `claude-account test personal` |
+| `remove` | 删除账号 | `claude-account remove work` |
+| `--help` | 显示帮助 | `claude-account --help` |
+| `--version` | 显示版本 | `claude-account --version` |
 
 ---
 
