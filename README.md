@@ -317,6 +317,10 @@ $ claude-test           # 测试延迟: 89ms
 
 ### 📦 安装
 
+#### 全局安装 (推荐)
+
+使用 npm 全局安装后，可以在任何目录直接使用 `claude-account` 命令：
+
 ```bash
 # 使用 npm
 npm install -g claude-account-switcher
@@ -327,6 +331,18 @@ pnpm install -g claude-account-switcher
 # 或使用 yarn
 yarn global add claude-account-switcher
 ```
+
+**安装完成后验证:**
+
+```bash
+claude-account --version
+# 输出: 1.0.0
+```
+
+**全局安装的优势:**
+- ✅ 在任何目录都能使用
+- ✅ 命令简洁: `claude-account` 而非 `node src/index.js`
+- ✅ 配合别名使用更方便
 
 > 💡 **开发者**: 如果你想从源码安装或参与开发，请查看 [开发文档 (DEVELOPMENT.md)](DEVELOPMENT.md)
 

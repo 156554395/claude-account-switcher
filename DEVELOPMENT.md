@@ -131,35 +131,90 @@ claude-account-switcher/
 
 ## 🛠️ 开发调试
 
-### 直接运行命令
+开发时有三种运行方式，根据需要选择：
 
-在开发过程中,可以直接运行源码:
+### 方式一: 直接运行源码 (最简单)
+
+**适用场景**: 快速测试、调试代码
+
+**优点**:
+- ✅ 不需要安装
+- ✅ 修改代码立即生效
+- ✅ 适合快速验证
+
+**缺点**:
+- ❌ 命令较长
+- ❌ 需要在项目目录或指定完整路径
+
+**使用方法**:
 
 ```bash
-# 添加账号
+# 在项目根目录下
 node src/index.js add test-account sk-ant-xxx
-
-# 列出账号
 node src/index.js list
-
-# 查看帮助
 node src/index.js --help
 
-# 查看某个命令的帮助
-node src/index.js add --help
+# 或指定完整路径
+node /path/to/claude-account-switcher/src/index.js list
 ```
 
-### 配置开发别名
+### 方式二: npm link 本地链接 (推荐)
 
-在 `~/.zshrc` 或 `~/.bashrc` 添加开发别名:
+**适用场景**: 长期开发、需要频繁测试
+
+**优点**:
+- ✅ 可以像全局包一样使用 `claude-account` 命令
+- ✅ 在任何目录都能运行
+- ✅ 修改代码立即生效（无需重新 link）
+- ✅ 最接近用户实际使用环境
+
+**缺点**:
+- ❌ 需要执行一次 link 操作
+
+**使用方法**:
+
+```bash
+# 1. 在项目根目录执行 link
+npm link
+# 或使用 sudo（如果权限不足）
+sudo npm link
+
+# 2. 之后就可以在任何目录使用
+claude-account add test-account sk-ant-xxx
+claude-account list
+claude-account --version
+
+# 3. 取消链接（不需要时）
+npm unlink -g claude-account-switcher
+# 或
+sudo npm unlink -g claude-account-switcher
+```
+
+### 方式三: 配置开发别名
+
+**适用场景**: 想要简短命令，但不想 link
+
+**优点**:
+- ✅ 命令简短
+- ✅ 不影响全局 npm 环境
+- ✅ 可以同时测试多个版本
+
+**缺点**:
+- ❌ 需要配置别名
+- ❌ 只在当前 shell 生效
+
+**使用方法**:
+
+在 `~/.zshrc` 或 `~/.bashrc` 添加:
 
 ```bash
 # 开发环境别名
 alias ca-dev='node /path/to/claude-account-switcher/src/index.js'
 alias ca-dev-switch='eval $(node /path/to/claude-account-switcher/src/index.js switch $1)'
+alias ca-dev-list='node /path/to/claude-account-switcher/src/index.js list'
 ```
 
-然后:
+然后刷新配置:
 
 ```bash
 source ~/.zshrc  # 或 source ~/.bashrc
@@ -168,9 +223,28 @@ source ~/.zshrc  # 或 source ~/.bashrc
 使用:
 
 ```bash
+ca-dev add test-account sk-ant-xxx
 ca-dev list
 ca-dev-switch personal
 ```
+
+---
+
+### 🎯 推荐方式对比
+
+| 特性 | 直接运行 | npm link | 别名 |
+|------|---------|----------|------|
+| 命令长度 | ❌ 很长 | ✅ 简短 | ✅ 简短 |
+| 配置复杂度 | ✅ 无需配置 | 🟡 一次配置 | 🟡 一次配置 |
+| 任意目录运行 | ❌ 需要路径 | ✅ 支持 | ✅ 支持 |
+| 代码实时生效 | ✅ 是 | ✅ 是 | ✅ 是 |
+| 接近生产环境 | ❌ 否 | ✅ 是 | ❌ 否 |
+| **推荐度** | ⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ |
+
+**💡 建议**:
+- 新手或快速测试 → 使用**方式一**
+- 长期开发 → 使用**方式二** (npm link)
+- 特殊需求 → 使用**方式三** (别名)
 
 ### 调试技巧
 
@@ -211,56 +285,92 @@ echo $ANTHROPIC_SMALL_FAST_MODEL
 
 ### 手动测试清单
 
-在提交代码前,请确保以下功能正常:
+在提交代码前,请确保以下功能正常。
 
-- [ ] 添加账号 (基础)
+> 💡 **提示**: 以下示例使用 `claude-account` 命令（假设已执行 `npm link`）。如果直接运行源码，请将 `claude-account` 替换为 `node src/index.js`
+
+#### 基础功能测试
+
+- [ ] **添加账号 (基础)**
   ```bash
-  node src/index.js add test sk-ant-xxx
+  claude-account add test sk-ant-xxx
   ```
 
-- [ ] 添加账号 (完整配置)
+- [ ] **添加账号 (完整配置)**
   ```bash
-  node src/index.js add test sk-ant-xxx \
+  claude-account add test sk-ant-xxx \
     --url "https://api.anthropic.com" \
     --model "claude-3-5-sonnet-20241022" \
     --small-model "claude-3-5-haiku-20241022"
   ```
 
-- [ ] 添加账号并测试
+- [ ] **添加账号并测试**
   ```bash
-  node src/index.js add test sk-ant-xxx --test
+  claude-account add test sk-ant-xxx --test
   ```
 
-- [ ] 列出所有账号
+- [ ] **列出所有账号**
+  ```bash
+  claude-account list
+  ```
+
+- [ ] **切换账号**
+  ```bash
+  # 使用 npm link 方式
+  eval $(claude-account switch test)
+  echo $ANTHROPIC_API_KEY  # 验证环境变量
+
+  # 或直接运行源码方式
+  eval $(node src/index.js switch test)
+  echo $ANTHROPIC_API_KEY
+  ```
+
+- [ ] **查看当前账号**
+  ```bash
+  claude-account current
+  ```
+
+- [ ] **测试账号连通性**
+  ```bash
+  claude-account test test      # 测试指定账号
+  claude-account test           # 测试当前账号
+  ```
+
+- [ ] **删除账号 (交互式)**
+  ```bash
+  claude-account remove test
+  ```
+
+- [ ] **删除账号 (强制)**
+  ```bash
+  claude-account remove test --force
+  ```
+
+#### 跨方式测试
+
+为确保三种运行方式都正常工作，请分别测试：
+
+- [ ] **直接运行源码**
   ```bash
   node src/index.js list
+  node src/index.js add test-direct sk-ant-xxx
+  node src/index.js remove test-direct --force
   ```
 
-- [ ] 切换账号
+- [ ] **npm link 方式**
   ```bash
-  eval $(node src/index.js switch test)
-  echo $ANTHROPIC_API_KEY  # 验证环境变量
+  npm link
+  claude-account list
+  claude-account add test-link sk-ant-xxx
+  claude-account remove test-link --force
   ```
 
-- [ ] 查看当前账号
+- [ ] **别名方式**
   ```bash
-  node src/index.js current
-  ```
-
-- [ ] 测试账号连通性
-  ```bash
-  node src/index.js test test
-  node src/index.js test  # 测试当前账号
-  ```
-
-- [ ] 删除账号 (交互式)
-  ```bash
-  node src/index.js remove test
-  ```
-
-- [ ] 删除账号 (强制)
-  ```bash
-  node src/index.js remove test --force
+  # 先配置别名（参考上文）
+  ca-dev list
+  ca-dev add test-alias sk-ant-xxx
+  ca-dev remove test-alias --force
   ```
 
 ### 输入验证测试
