@@ -1,0 +1,37 @@
+{
+  "name": "claude-account-switcher",
+  "version": "1.0.0",
+  "description": "Claude API 账号快速切换工具",
+  "type": "module",
+  "main": "src/index.js",
+  "bin": {
+    "claude-account": "src/index.js"
+  },
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "keywords": [
+    "claude",
+    "anthropic",
+    "api",
+    "switcher",
+    "cli",
+    "account-manager"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/156554395/claude-account-switcher.git"
+  },
+  "bugs": {
+    "url": "https://github.com/156554395/claude-account-switcher/issues"
+  },
+  "homepage": "https://github.com/156554395/claude-account-switcher#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "commander": "^14.0.1"
+  }
+}
