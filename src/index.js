@@ -33,10 +33,16 @@ program
   .description('列出所有账号')
   .action(listAccounts);
 
-// switch 命令 - 切换账号
+// use 命令 - 切换账号
+program
+  .command('use <name>')
+  .description('切换到指定账号 (输出 export 命令)')
+  .action(switchAccount);
+
+// switch 命令 - 兼容旧版本
 program
   .command('switch <name>')
-  .description('切换到指定账号 (输出 export 命令)')
+  .description('切换到指定账号 (输出 export 命令) [已弃用,请使用 use]')
   .action(switchAccount);
 
 // current 命令 - 显示当前账号

@@ -13,8 +13,8 @@ export function showCurrentAccount() {
 
   if (!currentName) {
     printInfo('当前没有激活的账号');
-    console.log('\n使用 "switch" 命令切换账号:');
-    console.log('  eval $(node src/index.js switch <name>)');
+    console.log('\n使用 "use" 命令切换账号:');
+    console.log('  eval $(claude-account use <name>)');
     return;
   }
 

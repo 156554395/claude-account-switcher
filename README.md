@@ -121,7 +121,7 @@ $ source ~/.zshrc
 
 ```bash
 # 一行命令,3 秒搞定
-$ claude-switch work
+$ claude-use work
 
 ✅ 已切换到账号: work
    API Key: sk-ant-***xxx
@@ -148,10 +148,10 @@ $ claude-switch work
 **3 秒切换账号,不修改系统配置**
 
 ```bash
-$ claude-switch personal
+$ claude-use personal
 ✅ 已切换到: personal
 
-$ claude-switch work
+$ claude-use work
 ✅ 已切换到: work
 ```
 
@@ -249,11 +249,11 @@ $ claude-add proxy sk-ant-xxx \
 
 ```bash
 # 早上切换到工作账号
-$ claude-switch work
+$ claude-use work
 ✅ 已切换到: work (公司 API)
 
 # 晚上切换到个人账号
-$ claude-switch personal
+$ claude-use personal
 ✅ 已切换到: personal (个人 API)
 
 # 🎯 再也不用担心用错账号了
@@ -263,11 +263,11 @@ $ claude-switch personal
 
 ```bash
 # 开发环境使用代理服务
-$ claude-switch dev
+$ claude-use dev
 ✅ API URL: https://dev-proxy.com
 
 # 生产环境使用官方 API
-$ claude-switch prod
+$ claude-use prod
 ✅ API URL: https://api.anthropic.com
 
 # 🎯 环境隔离,降低风险
@@ -277,12 +277,12 @@ $ claude-switch prod
 
 ```bash
 # 为客户 A 工作
-$ claude-switch client-a
+$ claude-use client-a
 ✅ 已切换到: client-a
    Model: claude-sonnet-4-5
 
 # 为客户 B 工作
-$ claude-switch client-b
+$ claude-use client-b
 ✅ 已切换到: client-b
    Model: qwen-plus (更经济)
 
@@ -302,10 +302,10 @@ $ claude-add aliyun sk-xxx \
   --model "qwen-plus"
 
 # 一键切换对比效果
-$ claude-switch official
+$ claude-use official
 $ claude-test           # 测试延迟: 234ms
 
-$ claude-switch aliyun
+$ claude-use aliyun
 $ claude-test           # 测试延迟: 89ms
 
 # 🎯 快速找到最适合的服务商
@@ -361,10 +361,10 @@ claude-account add personal sk-ant-your-key-here
 在 `~/.zshrc` 或 `~/.bashrc` 添加:
 
 ```bash
-alias ca-switch='eval $(claude-account switch $1)'
-alias ca-list='claude-account list'
-alias ca-test='claude-account test'
-alias ca-current='claude-account current'
+alias claude-use='eval $(claude-account use $1)'
+alias claude-list='claude-account list'
+alias claude-test='claude-account test'
+alias claude-current='claude-account current'
 ```
 
 然后刷新配置:
@@ -376,7 +376,7 @@ source ~/.zshrc  # 或 source ~/.bashrc
 #### 步骤 3: 开始使用 (3 秒)
 
 ```bash
-ca-switch personal
+claude-use personal
 ```
 
 **🎉 完成! 就是这么简单!**
@@ -454,10 +454,10 @@ claude-account list
 
 ```bash
 # 方式 1: 直接使用
-eval $(claude-account switch personal)
+eval $(claude-account use personal)
 
 # 方式 2: 使用别名(推荐 - 需先配置别名)
-ca-switch personal
+claude-use personal
 ```
 
 **切换后会自动设置以下环境变量:**
@@ -534,7 +534,7 @@ claude-account remove work --force
 |------|------|------|
 | `add` | 添加新账号 | `claude-account add personal sk-ant-xxx` |
 | `list` | 列出所有账号 | `claude-account list` |
-| `switch` | 切换账号 | `claude-account switch personal` |
+| `use` | 切换账号 | `claude-account use personal` |
 | `current` | 查看当前账号 | `claude-account current` |
 | `test` | 测试账号 | `claude-account test personal` |
 | `remove` | 删除账号 | `claude-account remove work` |
@@ -600,7 +600,7 @@ export CLAUDE_SWITCHER_PATH="/path/to/claude-account-switcher"
 
 alias claude-add='node $CLAUDE_SWITCHER_PATH/src/index.js add'
 alias claude-list='node $CLAUDE_SWITCHER_PATH/src/index.js list'
-alias claude-switch='eval $(node $CLAUDE_SWITCHER_PATH/src/index.js switch $1)'
+alias claude-use='eval $(node $CLAUDE_SWITCHER_PATH/src/index.js use $1)'
 alias claude-current='node $CLAUDE_SWITCHER_PATH/src/index.js current'
 alias claude-test='node $CLAUDE_SWITCHER_PATH/src/index.js test'
 alias claude-remove='node $CLAUDE_SWITCHER_PATH/src/index.js remove'
@@ -622,7 +622,7 @@ claude-add personal sk-ant-xxx --model "claude-sonnet-4-5" --test
 claude-list
 
 # 切换账号
-claude-switch personal
+claude-use personal
 
 # 查看当前
 claude-current
@@ -659,11 +659,11 @@ claude-add third-party sk-xxx \
 ```bash
 # 在项目 A 中
 cd ~/projects/project-a
-claude-switch client-a
+claude-use client-a
 
 # 在项目 B 中
 cd ~/projects/project-b
-claude-switch client-b
+claude-use client-b
 ```
 
 **💡 提示:** 配合 [direnv](https://direnv.net/) 可以实现进入目录自动切换账号
@@ -733,13 +733,13 @@ chmod +x test-all-accounts.sh
 
 ```bash
 # ❌ 错误用法
-node src/index.js switch personal
+node src/index.js use personal
 
 # ✅ 正确用法
-eval $(node src/index.js switch personal)
+eval $(node src/index.js use personal)
 
 # ✅ 或使用别名
-claude-switch personal
+claude-use personal
 ```
 
 **原因:** 子进程无法修改父进程的环境变量,需要使用 `eval` 在当前 shell 执行
@@ -788,11 +788,11 @@ claude-add proxy sk-ant-xxx \
 
 ```bash
 # 方案 1: 在 ~/.zshrc 中添加
-eval $(node /path/to/src/index.js switch personal)
+eval $(node /path/to/src/index.js use personal)
 
 # 方案 2: 使用 direnv(推荐)
 # 在项目目录创建 .envrc
-echo 'eval $(claude-switch personal)' > .envrc
+echo 'eval $(claude-use personal)' > .envrc
 direnv allow
 ```
 
@@ -868,8 +868,8 @@ claude-add recovered-account sk-ant-xxx \
 
 ```powershell
 # 在 $PROFILE 中添加
-function claude-switch {
-  Invoke-Expression (node /path/to/src/index.js switch $args[0])
+function claude-use {
+  Invoke-Expression (node /path/to/src/index.js use $args[0])
 }
 ```
 
