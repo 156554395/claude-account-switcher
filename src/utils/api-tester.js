@@ -14,13 +14,24 @@ export async function testAccount(account) {
     const apiUrl = account.url || 'https://api.anthropic.com';
     const model = account.model || 'claude-3-5-sonnet-20241022';
 
+    // 构建请求头 - 同时支持官方 API 和代理服务
+    const headers = {
+      'content-type': 'application/json'
+    };
+
+    // 官方 API 使用 x-api-key 和 anthropic-version
+    // 代理服务可能使用 Authorization
+    if (apiUrl.includes('anthropic.com')) {
+      headers['x-api-key'] = account.key;
+      headers['anthropic-version'] = '2023-06-01';
+    } else {
+      // 代理服务通常使用 Authorization 头
+      headers['Authorization'] = `Bearer ${account.key}`;
+    }
+
     const response = await fetch(`${apiUrl}/v1/messages`, {
       method: 'POST',
-      headers: {
-        'x-api-key': account.key,
-        'anthropic-version': '2023-06-01',
-        'content-type': 'application/json'
-      },
+      headers,
       body: JSON.stringify({
         model: model,
         max_tokens: 1,
