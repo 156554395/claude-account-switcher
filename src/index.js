@@ -15,7 +15,7 @@ const program = new Command();
 program
   .name('claude-account')
   .description('Claude API 账号快速切换工具')
-  .version('1.0.0');
+  .version('1.1.0');
 
 // add 命令 - 添加账号
 program

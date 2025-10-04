@@ -1,6 +1,6 @@
 {
   "name": "claude-account-switcher",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "🚀 Claude API 账号快速切换工具 - 3秒完成账号切换,告别繁琐的配置修改",
   "type": "module",
   "main": "src/index.js",

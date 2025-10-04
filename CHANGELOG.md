@@ -5,6 +5,26 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/),
 并且本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [1.1.0] - 2025-01-04
+
+### 新增
+
+- ✨ 新增 `use` 命令作为主要切换命令
+  - 更符合直觉的命令名称
+  - 保留 `switch` 命令向后兼容
+
+### 改进
+
+- 🔧 优化 API 认证方式
+  - 官方 API 使用 `x-api-key` 头
+  - 代理服务使用 `Authorization: Bearer` 头
+  - 自动根据 API URL 选择正确的认证方式
+
+### 文档
+
+- 📝 更新所有文档中的命令示例
+- 📝 更新别名配置说明
+
 ## [1.0.0] - 2025-01-02
 
 ### 新增
