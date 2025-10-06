@@ -5,6 +5,16 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/),
 并且本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [Unreleased]
+
+### 修复
+
+- 🐛 修复文档中 alias 无法传参的问题
+  - 将所有 alias 改为 shell 函数以支持参数传递
+  - 使用 `"$@"` 替代 `$1` 支持多参数
+  - 更新 README.md 和 DEVELOPMENT.md 中的所有示例
+  - 优化 PowerShell 函数示例
+
 ## [1.1.0] - 2025-01-04
 
 ### 新增

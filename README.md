@@ -356,15 +356,16 @@ claude-account --version
 claude-account add personal sk-ant-your-key-here
 ```
 
-#### 步骤 2: 设置切换别名 (一次性,10 秒)
+#### 步骤 2: 设置快捷命令 (一次性,10 秒)
 
 在 `~/.zshrc` 或 `~/.bashrc` 添加:
 
 ```bash
-alias claude-use='eval $(claude-account use $1)'
-alias claude-list='claude-account list'
-alias claude-test='claude-account test'
-alias claude-current='claude-account current'
+# 使用 shell 函数以支持参数传递
+claude-use() { eval $(claude-account use "$@"); }
+claude-list() { claude-account list "$@"; }
+claude-test() { claude-account test "$@"; }
+claude-current() { claude-account current "$@"; }
 ```
 
 然后刷新配置:
@@ -372,6 +373,8 @@ alias claude-current='claude-account current'
 ```bash
 source ~/.zshrc  # 或 source ~/.bashrc
 ```
+
+> 💡 **提示**: 使用 shell 函数而非 alias 以支持参数传递。详见 [Shell 配置说明](SHELL_SETUP.md)
 
 #### 步骤 3: 开始使用 (3 秒)
 
@@ -456,7 +459,7 @@ claude-account list
 # 方式 1: 直接使用
 eval $(claude-account use personal)
 
-# 方式 2: 使用别名(推荐 - 需先配置别名)
+# 方式 2: 使用快捷命令(推荐 - 需先配置函数)
 claude-use personal
 ```
 
@@ -590,20 +593,20 @@ claude-account remove work --force
 
 ## 🚀 高级用法
 
-### 设置全局别名(强烈推荐)
+### 设置全局快捷命令(强烈推荐)
 
 在 `~/.zshrc` 或 `~/.bashrc` 中添加:
 
 ```bash
-# Claude Account Switcher 别名
+# Claude Account Switcher 函数
 export CLAUDE_SWITCHER_PATH="/path/to/claude-account-switcher"
 
-alias claude-add='node $CLAUDE_SWITCHER_PATH/src/index.js add'
-alias claude-list='node $CLAUDE_SWITCHER_PATH/src/index.js list'
-alias claude-use='eval $(node $CLAUDE_SWITCHER_PATH/src/index.js use $1)'
-alias claude-current='node $CLAUDE_SWITCHER_PATH/src/index.js current'
-alias claude-test='node $CLAUDE_SWITCHER_PATH/src/index.js test'
-alias claude-remove='node $CLAUDE_SWITCHER_PATH/src/index.js remove'
+claude-add() { node $CLAUDE_SWITCHER_PATH/src/index.js add "$@"; }
+claude-list() { node $CLAUDE_SWITCHER_PATH/src/index.js list "$@"; }
+claude-use() { eval $(node $CLAUDE_SWITCHER_PATH/src/index.js use "$@"); }
+claude-current() { node $CLAUDE_SWITCHER_PATH/src/index.js current "$@"; }
+claude-test() { node $CLAUDE_SWITCHER_PATH/src/index.js test "$@"; }
+claude-remove() { node $CLAUDE_SWITCHER_PATH/src/index.js remove "$@"; }
 ```
 
 然后:
@@ -612,7 +615,7 @@ alias claude-remove='node $CLAUDE_SWITCHER_PATH/src/index.js remove'
 source ~/.zshrc  # 或 source ~/.bashrc
 ```
 
-**使用别名:**
+**使用快捷命令:**
 
 ```bash
 # 添加账号
@@ -738,7 +741,7 @@ node src/index.js use personal
 # ✅ 正确用法
 eval $(node src/index.js use personal)
 
-# ✅ 或使用别名
+# ✅ 或使用快捷函数
 claude-use personal
 ```
 
@@ -864,12 +867,13 @@ claude-add recovered-account sk-ant-xxx \
 2. 使用 PowerShell 或 Git Bash
 3. 配置文件位于 `%USERPROFILE%\.claude\accounts.json`
 
-**PowerShell 别名:**
+**PowerShell 函数:**
 
 ```powershell
 # 在 $PROFILE 中添加
 function claude-use {
-  Invoke-Expression (node /path/to/src/index.js use $args[0])
+  param([string]$AccountName)
+  Invoke-Expression (& node /path/to/src/index.js use $AccountName)
 }
 ```
 

@@ -190,7 +190,7 @@ npm unlink -g claude-account-switcher
 sudo npm unlink -g claude-account-switcher
 ```
 
-### 方式三: 配置开发别名
+### 方式三: 配置开发快捷函数
 
 **适用场景**: 想要简短命令，但不想 link
 
@@ -200,7 +200,7 @@ sudo npm unlink -g claude-account-switcher
 - ✅ 可以同时测试多个版本
 
 **缺点**:
-- ❌ 需要配置别名
+- ❌ 需要配置函数
 - ❌ 只在当前 shell 生效
 
 **使用方法**:
@@ -208,10 +208,10 @@ sudo npm unlink -g claude-account-switcher
 在 `~/.zshrc` 或 `~/.bashrc` 添加:
 
 ```bash
-# 开发环境别名
-alias ca-dev='node /path/to/claude-account-switcher/src/index.js'
-alias ca-dev-switch='eval $(node /path/to/claude-account-switcher/src/index.js switch $1)'
-alias ca-dev-list='node /path/to/claude-account-switcher/src/index.js list'
+# 开发环境函数
+ca-dev() { node /path/to/claude-account-switcher/src/index.js "$@"; }
+ca-dev-switch() { eval $(node /path/to/claude-account-switcher/src/index.js use "$@"); }
+ca-dev-list() { node /path/to/claude-account-switcher/src/index.js list "$@"; }
 ```
 
 然后刷新配置:
@@ -232,7 +232,7 @@ ca-dev-switch personal
 
 ### 🎯 推荐方式对比
 
-| 特性 | 直接运行 | npm link | 别名 |
+| 特性 | 直接运行 | npm link | 快捷函数 |
 |------|---------|----------|------|
 | 命令长度 | ❌ 很长 | ✅ 简短 | ✅ 简短 |
 | 配置复杂度 | ✅ 无需配置 | 🟡 一次配置 | 🟡 一次配置 |
@@ -244,7 +244,7 @@ ca-dev-switch personal
 **💡 建议**:
 - 新手或快速测试 → 使用**方式一**
 - 长期开发 → 使用**方式二** (npm link)
-- 特殊需求 → 使用**方式三** (别名)
+- 特殊需求 → 使用**方式三** (快捷函数)
 
 ### 调试技巧
 
@@ -365,9 +365,9 @@ echo $ANTHROPIC_SMALL_FAST_MODEL
   claude-account remove test-link --force
   ```
 
-- [ ] **别名方式**
+- [ ] **快捷函数方式**
   ```bash
-  # 先配置别名（参考上文）
+  # 先配置函数（参考上文）
   ca-dev list
   ca-dev add test-alias sk-ant-xxx
   ca-dev remove test-alias --force
