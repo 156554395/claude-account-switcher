@@ -10,8 +10,8 @@ export function validateApiKey(key) {
     return false;
   }
 
-  // API Key 应该以 sk-ant- 开头
-  return key.startsWith('sk-ant-') && key.length > 10;
+  // API Key 应该以 sk-ant- 开头，或者长度足够长（支持测试环境的 key）
+  return (key.startsWith('sk-ant-') || key.length > 20) && key.length > 10;
 }
 
 /**

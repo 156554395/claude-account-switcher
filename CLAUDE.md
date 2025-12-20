@@ -1,14 +1,17 @@
 <!-- OPENSPEC:START -->
+
 # OpenSpec Instructions
 
 These instructions are for AI assistants working in this project.
 
 Always open `@/openspec/AGENTS.md` when the request:
+
 - Mentions planning or proposals (words like proposal, spec, change, plan)
 - Introduces new capabilities, breaking changes, architecture shifts, or big performance/security work
 - Sounds ambiguous and you need the authoritative spec before coding
 
 Use `@/openspec/AGENTS.md` to learn:
+
 - How to create and apply change proposals
 - Spec format and conventions
 - Project structure and guidelines
@@ -46,7 +49,7 @@ npm link
 claude-account <command>
 
 # 示例命令
-claude-account add personal sk-ant-xxx --model "claude-sonnet-4-5"
+claude-account add
 claude-account list
 claude-account use personal
 claude-account test
@@ -72,7 +75,7 @@ src/
 ├── commands/               # 命令实现
 │   ├── add.js              # 添加账号命令
 │   ├── list.js             # 列出账号命令
-│   ├── switch.js           # 切换账号命令
+│   ├── use.js              # 切换账号命令
 │   ├── remove.js           # 删除账号命令
 │   ├── test.js             # 测试账号命令
 │   └── current.js          # 显示当前账号命令
@@ -102,6 +105,7 @@ src/
 ### 环境变量
 
 切换账号时会设置以下环境变量：
+
 - `ANTHROPIC_API_KEY`: API 密钥
 - `ANTHROPIC_API_URL`: API 地址 (可选)
 - `ANTHROPIC_MODEL`: 主模型 (可选)
@@ -117,6 +121,7 @@ src/
 ## 贡献指南
 
 遵循标准的 git 工作流程：
+
 1. Fork 项目
 2. 创建特性分支
 3. 提交更改

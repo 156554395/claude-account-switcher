@@ -32,6 +32,7 @@ export function listAccounts() {
     console.log(`  URL:        ${account.url || '-'}`);
     console.log(`  Model:      ${account.model || '-'}`);
     console.log(`  Small:      ${account.smallModel || '-'}`);
+    console.log(`  Opus:       ${account.opusModel || '-'}`);
 
     // 不是最后一个账号时,添加空行
     if (index < accounts.length - 1) {

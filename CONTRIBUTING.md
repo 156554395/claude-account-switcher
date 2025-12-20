@@ -24,7 +24,7 @@
    ```bash
    # 在 GitHub 上 Fork 项目
    # 克隆你的 Fork
-   git clone https://github.com/your-username/claude-account-switcher.git
+   git clone https://github.com/156554395/claude-account-switcher.git
    cd claude-account-switcher
    ```
 

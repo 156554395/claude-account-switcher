@@ -50,7 +50,7 @@ src/
 ├── commands/               # 命令实现层
 │   ├── add.js              # 添加账号 (add)
 │   ├── list.js             # 列出账号 (list)
-│   ├── switch.js           # 切换账号 (use)
+│   ├── use.js              # 切换账号 (use)
 │   ├── remove.js           # 删除账号 (remove)
 │   ├── test.js             # 测试 API (test)
 │   └── current.js          # 显示当前账号 (current)
@@ -141,7 +141,7 @@ pnpm build
 
 ### 业务领域
 - **API 账号管理**: 多账号的生命周期管理
-- **环境变量管理**: 安全的配置注入和切换
+- **配置文件管理**: 直接修改 Claude settings.json 文件
 - **代理服务集成**: 支持第三方 API 代理
 - **CLI 工具开发**: 命令行界面的最佳实践
 
@@ -156,8 +156,9 @@ pnpm build
 ### 安全约束
 - **文件权限**: 配置文件强制使用 600 权限
 - **数据脱敏**: API Key 在日志和输出中自动隐藏
-- **临时生效**: 账号切换仅影响当前终端会话
+- **配置持久化**: 账号切换直接修改 Claude 配置文件
 - **不存储敏感信息**: 不记录 API 调用历史
+- **备份机制**: 自动备份配置文件，防止数据丢失
 
 ### 兼容性约束
 - **Node.js 版本**: 最低支持 18.0.0
@@ -200,10 +201,12 @@ pnpm build
   ```
 
 ### 配置文件位置
-- **默认路径**: `~/.claude/accounts.json`
-- **Windows**: `%USERPROFILE%\.claude\accounts.json`
-- **macOS**: `$HOME/.claude/accounts.json`
-- **Linux**: `$HOME/.claude/accounts.json`
+- **账号配置**: `~/.claude/accounts.json`
+- **Claude 配置**: `~/.claude/settings.json`
+- **备份文件**: `~/.claude/settings.backup.*.json`
+- **Windows**: `%USERPROFILE%\.claude\`
+- **macOS**: `$HOME/.claude/`
+- **Linux**: `$HOME/.claude/`
 
 ## Performance Considerations
 - **启动速度**: 冷启动 < 500ms

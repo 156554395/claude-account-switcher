@@ -80,7 +80,7 @@ claude-account-switcher/
 │   ├── commands/             # 命令实现
 │   │   ├── add.js           # 添加账号命令
 │   │   ├── list.js          # 列出账号命令
-│   │   ├── switch.js        # 切换账号命令
+│   │   ├── use.js           # 切换账号命令
 │   │   ├── current.js       # 查看当前账号命令
 │   │   ├── test.js          # 测试账号命令
 │   │   └── remove.js        # 删除账号命令
@@ -97,7 +97,6 @@ claude-account-switcher/
 │   └── pull_request_template.md
 ├── package.json              # 项目配置
 ├── README.md                 # 用户文档 (npm 用户)
-├── DEVELOPMENT.md            # 开发文档 (本文件)
 ├── CONTRIBUTING.md           # 贡献指南
 ├── CHANGELOG.md              # 版本更新日志
 ├── LICENSE                   # MIT 许可证
@@ -210,7 +209,7 @@ sudo npm unlink -g claude-account-switcher
 ```bash
 # 开发环境函数
 ca-dev() { node /path/to/claude-account-switcher/src/index.js "$@"; }
-ca-dev-switch() { eval $(node /path/to/claude-account-switcher/src/index.js use "$@"); }
+ca-dev-use() { node /path/to/claude-account-switcher/src/index.js use "$@"; }
 ca-dev-list() { node /path/to/claude-account-switcher/src/index.js list "$@"; }
 ```
 
@@ -225,7 +224,7 @@ source ~/.zshrc  # 或 source ~/.bashrc
 ```bash
 ca-dev add test-account sk-ant-xxx
 ca-dev list
-ca-dev-switch personal
+ca-dev-use personal
 ```
 
 ---
@@ -317,12 +316,10 @@ echo $ANTHROPIC_SMALL_FAST_MODEL
 - [ ] **切换账号**
   ```bash
   # 使用 npm link 方式
-  eval $(claude-account switch test)
-  echo $ANTHROPIC_API_KEY  # 验证环境变量
+  claude-account use test
 
   # 或直接运行源码方式
-  eval $(node src/index.js switch test)
-  echo $ANTHROPIC_API_KEY
+  node src/index.js use test
   ```
 
 - [ ] **查看当前账号**
