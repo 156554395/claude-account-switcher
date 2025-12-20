@@ -24,6 +24,7 @@ pnpm install -g claude-account-switcher
 ## 🎯 快速开始
 
 ### 1. 添加账号
+
 ```bash
 # 交互式添加（推荐）
 claude-account add
@@ -33,6 +34,7 @@ claude-account add personal
 ```
 
 添加过程中会依次询问：
+
 - 账号名称（如果未预先指定）
 - API Key（必须）
 - API 地址（可选，默认：https://api.anthropic.com）
@@ -42,17 +44,20 @@ claude-account add personal
 - 是否立即测试连通性
 
 **模型配置说明：**
+
 - 所有模型字段都是可选的，如果不配置可以回车跳过
 - 如果填写了主模型，后续模型未填写时会自动使用主模型的值
 - 只有实际填写的模型才会保存到配置文件中
 - 未填写的模型字段不会出现在 `~/.claude/accounts.json` 中
 
 ### 2. 切换账号
+
 ```bash
 claude-account use personal
 ```
 
 ### 3. 查看当前账号
+
 ```bash
 claude-account current
 ```
@@ -61,14 +66,14 @@ claude-account current
 
 ## 📋 所有命令
 
-| 命令 | 说明 | 示例 |
-|------|------|------|
-| `add` | 添加新账号 | `claude-account add` 或 `claude-account add personal` |
-| `list` | 列出所有账号 | `claude-account list` |
-| `use` | 切换账号 | `claude-account use personal` |
-| `test` | 测试账号连通性 | `claude-account test personal` |
-| `remove` | 删除账号 | `claude-account remove work` |
-| `current` | 查看当前账号 | `claude-account current` |
+| 命令      | 说明           | 示例                                                  |
+| --------- | -------------- | ----------------------------------------------------- |
+| `add`     | 添加新账号     | `claude-account add` 或 `claude-account add personal` |
+| `list`    | 列出所有账号   | `claude-account list`                                 |
+| `use`     | 切换账号       | `claude-account use personal`                         |
+| `test`    | 测试账号连通性 | `claude-account test personal`                        |
+| `remove`  | 删除账号       | `claude-account remove work`                          |
+| `current` | 查看当前账号   | `claude-account current`                              |
 
 ---
 
@@ -77,6 +82,7 @@ claude-account current
 ### 添加账号
 
 **交互式添加（唯一方式）：**
+
 ```bash
 # 完全交互式
 claude-account add
@@ -86,15 +92,17 @@ claude-account add personal
 ```
 
 **添加过程会依次询问：**
+
 1. **账号名称**（如果未预先指定）
 2. **API Key**（必须，格式：`sk-ant-xxx`）
 3. **API 地址**（可选，默认：`https://api.anthropic.com`）
 4. **主模型**（可选，例如：`claude-sonnet-4-5-20250929`）
-5. **快速小模型**（可选，例如：`claude-3-5-haiku-20241022`）
-6. **Opus 模型**（可选，例如：`claude-3-opus-20240229`）
+5. **快速小模型**（可选，例如：`claude-haiku-4-5-20251001`）
+6. **Opus 模型**（可选，例如：`claude-opus-4-5-20251101`）
 7. **是否立即测试连通性**（yes/no）
 
 **示例 1：完整配置**
+
 ```bash
 $ claude-account add personal
 === 交互式添加 Claude 账号 ===
@@ -103,8 +111,8 @@ $ claude-account add personal
 请输入 API Key: sk-ant-xxx
 请输入 API 地址 [默认: https://api.anthropic.com]:
 请输入主模型 (可选，回车跳过): claude-sonnet-4-5-20250929
-请输入快速小模型 (可选，回车跳过): claude-3-5-haiku-20241022
-请输入 Opus 模型 (可选，回车跳过): claude-3-opus-20240229
+请输入快速小模型 (可选，回车跳过): claude-haiku-4-5-20251001
+请输入 Opus 模型 (可选，回车跳过): claude-opus-4-5-20251101
 是否立即测试账号连通性? (yes/no) [默认: no]: yes
 
 账号 'personal' 添加成功！
@@ -113,6 +121,7 @@ API 测试通过 (456ms)
 ```
 
 **示例 2：只配置主模型（后续模型自动使用主模型）**
+
 ```bash
 $ claude-account add work
 === 交互式添加 Claude 账号 ===
@@ -127,9 +136,11 @@ $ claude-account add work
 账号 'work' 添加成功！
 💡 提示: 使用 claude-account use work 切换到此账号
 ```
+
 此时配置文件只保存：`model: "claude-sonnet-4-5-20250929"`，不包含 `smallModel` 和 `opusModel` 字段。
 
 **示例 3：不配置任何模型**
+
 ```bash
 $ claude-account add test
 === 交互式添加 Claude 账号 ===
@@ -144,6 +155,7 @@ $ claude-account add test
 账号 'test' 添加成功！
 💡 提示: 使用 claude-account use test 切换到此账号
 ```
+
 此时配置文件不包含任何模型字段。
 
 ### 切换账号
@@ -190,6 +202,7 @@ claude-account remove work --force
 ## 🔧 配置文件
 
 ### 存储位置
+
 - **账号配置：** `~/.claude/accounts.json`
 - **Claude 配置：** `~/.claude/settings.json`
 
@@ -198,6 +211,7 @@ claude-account remove work --force
 配置文件只保存实际填写的字段：
 
 **示例 1：配置了所有模型**
+
 ```json
 {
   "version": "1.1.0",
@@ -207,14 +221,15 @@ claude-account remove work --force
       "key": "sk-ant-xxx",
       "url": "https://api.anthropic.com",
       "model": "claude-sonnet-4-5-20250929",
-      "smallModel": "claude-3-5-haiku-20241022",
-      "opusModel": "claude-3-opus-20240229"
+      "smallModel": "claude-haiku-4-5-20251001",
+      "opusModel": "claude-opus-4-5-20251101"
     }
   ]
 }
 ```
 
 **示例 2：只配置了主模型**
+
 ```json
 {
   "version": "1.1.0",
@@ -230,6 +245,7 @@ claude-account remove work --force
 ```
 
 **示例 3：未配置任何模型**
+
 ```json
 {
   "version": "1.1.0",
@@ -257,7 +273,9 @@ claude-account remove work --force
 ## 💡 使用技巧
 
 ### 快捷命令
+
 在 `~/.zshrc` 或 `~/.bashrc` 添加：
+
 ```bash
 # 开发环境快捷函数
 alias ca-add='claude-account add'
@@ -268,6 +286,7 @@ alias ca-current='claude-account current'
 ```
 
 ### 多账号场景
+
 ```bash
 # 个人项目
 claude-account use personal
@@ -304,6 +323,7 @@ API 测试通过 (321ms)
 ```
 
 配置文件将只保存实际填写的字段：
+
 ```json
 {
   "name": "proxy",

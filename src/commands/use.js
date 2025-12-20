@@ -34,11 +34,15 @@ export function switchAccount(name) {
     if (account.url) {
       console.log(`  API 地址: ${account.url}`);
     }
-    if (account.smallModel) {
-      console.log(`  快速模型: ${account.smallModel}`);
+    // 如果没有配置小模型，使用主模型
+    const smallModel = account.smallModel || account.model;
+    if (smallModel) {
+      console.log(`  快速模型: ${smallModel}`);
     }
-    if (account.opusModel) {
-      console.log(`  Opus 模型: ${account.opusModel}`);
+    // 如果没有配置 Opus 模型，使用主模型
+    const opusModel = account.opusModel || account.model;
+    if (opusModel) {
+      console.log(`  Opus 模型: ${opusModel}`);
     }
 
   } catch (error) {

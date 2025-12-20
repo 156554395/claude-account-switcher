@@ -153,7 +153,7 @@ export class ConfigManager {
     if (!existsSync(SETTINGS_PATH)) {
       const defaultSettings = {
         api_key: "",
-        model: "claude-3-5-sonnet-20241022",
+        model: "claude-haiku-4-5-20251001",
         max_tokens: 4096
       };
       this.saveSettings(defaultSettings);
@@ -174,7 +174,7 @@ export class ConfigManager {
       // 返回默认设置
       return {
         api_key: "",
-        model: "claude-3-5-sonnet-20241022",
+        model: "claude-haiku-4-5-20251001",
         max_tokens: 4096
       };
     }
@@ -186,7 +186,11 @@ export class ConfigManager {
    */
   saveSettings(data) {
     try {
-      this.ensureSettingsFile();
+      // 确保目录存在（不调用 ensureSettingsFile 避免循环）
+      if (!existsSync(CLAUDE_DIR)) {
+        mkdirSync(CLAUDE_DIR, { recursive: true, mode: 0o700 });
+      }
+
       // 创建备份
       this.createSettingsBackup();
 
@@ -359,29 +363,39 @@ export class ConfigManager {
     // 设置固定的 API_TIMEOUT_MS
     settings.env.API_TIMEOUT_MS = "3000000";
 
+    // 清除旧的模型环境变量，避免残留
+    delete settings.env.ANTHROPIC_DEFAULT_SONNET_MODEL;
+    delete settings.env.ANTHROPIC_DEFAULT_HAIKU_MODEL;
+    delete settings.env.ANTHROPIC_DEFAULT_OPUS_MODEL;
+
     // 处理模型配置
-    if (account.model) {
+    // 如果没有配置小模型和 Opus 模型，则使用主模型作为默认值
+    const mainModel = account.model;
+    const smallModel = account.smallModel || mainModel;
+    const opusModel = account.opusModel || mainModel;
+
+    if (mainModel) {
       // 根据账号的模型类型设置对应的 env 变量
-      if (account.model.includes('opus')) {
-        settings.env.ANTHROPIC_DEFAULT_OPUS_MODEL = account.model;
-      } else if (account.model.includes('sonnet')) {
-        settings.env.ANTHROPIC_DEFAULT_SONNET_MODEL = account.model;
-      } else if (account.model.includes('haiku')) {
-        settings.env.ANTHROPIC_DEFAULT_HAIKU_MODEL = account.model;
+      if (mainModel.includes('opus')) {
+        settings.env.ANTHROPIC_DEFAULT_OPUS_MODEL = mainModel;
+      } else if (mainModel.includes('sonnet')) {
+        settings.env.ANTHROPIC_DEFAULT_SONNET_MODEL = mainModel;
+      } else if (mainModel.includes('haiku')) {
+        settings.env.ANTHROPIC_DEFAULT_HAIKU_MODEL = mainModel;
       } else {
         // 默认设置为 sonnet
-        settings.env.ANTHROPIC_DEFAULT_SONNET_MODEL = account.model;
+        settings.env.ANTHROPIC_DEFAULT_SONNET_MODEL = mainModel;
       }
     }
 
-    if (account.smallModel) {
+    if (smallModel) {
       // 小模型通常设置为 haiku
-      settings.env.ANTHROPIC_DEFAULT_HAIKU_MODEL = account.smallModel;
+      settings.env.ANTHROPIC_DEFAULT_HAIKU_MODEL = smallModel;
     }
 
-    if (account.opusModel) {
+    if (opusModel) {
       // Opus 模型
-      settings.env.ANTHROPIC_DEFAULT_OPUS_MODEL = account.opusModel;
+      settings.env.ANTHROPIC_DEFAULT_OPUS_MODEL = opusModel;
     }
 
     this.saveSettings(settings);

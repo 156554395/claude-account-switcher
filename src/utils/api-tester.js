@@ -12,7 +12,7 @@ export async function testAccount(account) {
 
   try {
     const apiUrl = account.url || 'https://api.anthropic.com';
-    const model = account.model || 'claude-3-5-sonnet-20241022';
+    const model = account.model || 'claude-haiku-4-5-20251001';
 
     // 构建请求头 - 同时支持官方 API 和代理服务
     const headers = {
