@@ -355,7 +355,9 @@ A: 账号列表在 `~/.claude/accounts.json`，Claude 配置在 `~/.claude/setti
 3. **自动发布**: 测试通过后自动发布到 NPM
 4. **查看状态**: 在 GitHub Actions 页面查看发布状态
 
-**配置指南**: 查看 [`.github/NPM_SETUP.md`](.github/NPM_SETUP.md) 了解如何设置 NPM Token。
+**⚠️ 重要**: 由于 npm 2024年12月的 MFA 要求，必须先启用多因素认证才能设置自动发布。
+
+**配置指南**: 查看 [`.github/NPM_SETUP.md`](.github/NPM_SETUP.md) 了解详细步骤。
 
 ---
 
