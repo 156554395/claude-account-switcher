@@ -272,19 +272,6 @@ claude-account remove work --force
 
 ## 💡 使用技巧
 
-### 快捷命令
-
-在 `~/.zshrc` 或 `~/.bashrc` 添加：
-
-```bash
-# 开发环境快捷函数
-alias ca-add='claude-account add'
-alias ca-list='claude-account list'
-alias ca-use='claude-account use'
-alias ca-test='claude-account test'
-alias ca-current='claude-account current'
-```
-
 ### 多账号场景
 
 ```bash
