@@ -346,6 +346,17 @@ A: 账号列表在 `~/.claude/accounts.json`，Claude 配置在 `~/.claude/setti
 - **Issue:** https://github.com/156554395/claude-account-switcher/issues
 - **PR:** https://github.com/156554395/claude-account-switcher/pulls
 
+### 🚀 自动发布流程
+
+本项目配置了 GitHub Actions 自动发布到 NPM：
+
+1. **创建 Release**: 在 GitHub 上创建新的 Release（如 `v1.1.2`）
+2. **自动测试**: GitHub Actions 会自动运行测试
+3. **自动发布**: 测试通过后自动发布到 NPM
+4. **查看状态**: 在 GitHub Actions 页面查看发布状态
+
+**配置指南**: 查看 [`.github/NPM_SETUP.md`](.github/NPM_SETUP.md) 了解如何设置 NPM Token。
+
 ---
 
 ## 📄 开源协议
