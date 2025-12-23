@@ -167,7 +167,8 @@ export class ConfigManager {
   loadSettings() {
     try {
       this.ensureSettingsFile();
-      const data = readFileSync(SETTINGS_PATH, 'utf-8');
+      const settingsPath = this.getSettingsPath();
+      const data = readFileSync(settingsPath, 'utf-8');
       return JSON.parse(data);
     } catch (error) {
       console.error('读取设置文件失败:', error.message);
@@ -186,6 +187,8 @@ export class ConfigManager {
    */
   saveSettings(data) {
     try {
+      const settingsPath = this.getSettingsPath();
+
       // 确保目录存在（不调用 ensureSettingsFile 避免循环）
       if (!existsSync(CLAUDE_DIR)) {
         mkdirSync(CLAUDE_DIR, { recursive: true, mode: 0o700 });
@@ -194,8 +197,8 @@ export class ConfigManager {
       // 创建备份
       this.createSettingsBackup();
 
-      writeFileSync(SETTINGS_PATH, JSON.stringify(data, null, 2));
-      chmodSync(SETTINGS_PATH, 0o600);
+      writeFileSync(settingsPath, JSON.stringify(data, null, 2));
+      chmodSync(settingsPath, 0o600);
     } catch (error) {
       console.error('保存设置文件失败:', error.message);
       // 尝试恢复备份
@@ -208,12 +211,13 @@ export class ConfigManager {
    * 创建设置文件的备份
    */
   createSettingsBackup() {
-    if (existsSync(SETTINGS_PATH)) {
+    const settingsPath = this.getSettingsPath();
+    if (existsSync(settingsPath)) {
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
       const backupPath = join(CLAUDE_DIR, `settings.backup.${timestamp}.json`);
       try {
         // 读取原文件内容
-        const originalData = readFileSync(SETTINGS_PATH, 'utf-8');
+        const originalData = readFileSync(settingsPath, 'utf-8');
         // 写入备份文件
         writeFileSync(backupPath, originalData);
         chmodSync(backupPath, 0o600);
@@ -228,6 +232,7 @@ export class ConfigManager {
    */
   restoreSettingsBackup() {
     try {
+      const settingsPath = this.getSettingsPath();
       // 查找最新的备份文件
       const backupFiles = readdirSync(CLAUDE_DIR)
         .filter(file => file.startsWith('settings.backup.') && file.endsWith('.json'))
@@ -237,8 +242,8 @@ export class ConfigManager {
       if (backupFiles.length > 0) {
         const latestBackup = join(CLAUDE_DIR, backupFiles[0]);
         const backupData = readFileSync(latestBackup, 'utf-8');
-        writeFileSync(SETTINGS_PATH, backupData);
-        chmodSync(SETTINGS_PATH, 0o600);
+        writeFileSync(settingsPath, backupData);
+        chmodSync(settingsPath, 0o600);
         console.log('已从备份恢复设置文件');
       }
     } catch (error) {
