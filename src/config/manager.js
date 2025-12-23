@@ -144,13 +144,15 @@ export class ConfigManager {
    * 确保设置文件存在
    */
   ensureSettingsFile() {
+    const settingsPath = this.getSettingsPath();
+
     // 确保 ~/.claude 目录存在
     if (!existsSync(CLAUDE_DIR)) {
       mkdirSync(CLAUDE_DIR, { recursive: true, mode: 0o700 });
     }
 
     // 如果设置文件不存在，创建一个默认的
-    if (!existsSync(SETTINGS_PATH)) {
+    if (!existsSync(settingsPath)) {
       const defaultSettings = {
         api_key: "",
         model: "claude-haiku-4-5-20251001",
