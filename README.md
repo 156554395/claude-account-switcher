@@ -80,6 +80,7 @@ claude-account current
 | `test`    | 测试账号连通性 | `claude-account test personal`                        |
 | `remove`  | 删除账号       | `claude-account remove work`                          |
 | `current` | 查看当前账号   | `claude-account current`                              |
+| `clear`   | 清空环境配置   | `claude-account clear`                                |
 
 ---
 
@@ -201,7 +202,33 @@ claude-account remove work
 
 # 强制删除
 claude-account remove work --force
+
+# 清空环境配置（保留其他设置）
+claude-account clear
 ```
+
+### 清空环境配置
+
+`clear` 命令用于安全地清除 `~/.claude/settings.json` 中的 `env` 配置，同时保留其他设置：
+
+```bash
+$ claude-account clear
+✅ 环境配置清除成功
+💡 使用 "claude-account use <name>" 重新配置
+```
+
+**使用场景：**
+
+- 需要重置 API 密钥和代理配置
+- 切换到不同的账号系统
+- 清理敏感的环境变量
+
+**注意事项：**
+
+- 只删除 `env` 配置，保留 `api_key`、`model`、`max_tokens` 等其他设置
+- 自动创建备份文件（`settings.backup.{timestamp}.json`）
+- 如果清除失败，会自动恢复备份
+- 无法删除文件时会提示错误信息
 
 ---
 
