@@ -4,13 +4,12 @@ on:
   release:        # 发 GitHub Release 时自动触发
     types: [published]
 
-permissions:
-  id-token: write  # Required for OIDC
-  contents: read
-
 jobs:
   publish:
     runs-on: ubuntu-latest
+    permissions:          # ← 1. 放到 job 里
+      contents: read
+      id-token: write     # ← 2. OIDC 必须
     steps:
       - uses: actions/checkout@v4
 
