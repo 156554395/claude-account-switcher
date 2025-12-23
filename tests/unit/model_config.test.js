@@ -2,55 +2,149 @@
 // 测试模型配置的默认值逻辑和环境变量设置
 
 import { ConfigManager } from '../../src/config/manager.js';
-import { readFileSync, existsSync, unlinkSync, writeFileSync, readdirSync } from 'fs';
+import fs from 'fs';
 import { join } from 'path';
 import { homedir } from 'os';
+
+const { readFileSync, existsSync, unlinkSync, writeFileSync, mkdirSync } = fs;
 
 const CLAUDE_DIR = join(homedir(), '.claude');
 const CONFIG_PATH = join(CLAUDE_DIR, 'accounts.json');
 const SETTINGS_PATH = join(CLAUDE_DIR, 'settings.json');
 
-// 备份现有文件
-function backupFiles() {
-  const timestamp = Date.now();
-  const backups = [];
+// 测试专用目录，不影响用户真实配置
+const TEST_DIR = join(homedir(), '.claude-test-model-config');
+const TEST_CONFIG_PATH = join(TEST_DIR, 'accounts.json');
+const TEST_SETTINGS_PATH = join(TEST_DIR, 'settings.json');
 
+// 用户原始文件备份
+let userConfigBackup = null;
+let userSettingsBackup = null;
+
+// 备份用户原始文件
+function backupUserFiles() {
   if (existsSync(CONFIG_PATH)) {
-    const backupPath = CONFIG_PATH + `.test_backup_${timestamp}`;
-    const content = readFileSync(CONFIG_PATH, 'utf-8');
-    writeFileSync(backupPath, content);
-    backups.push(backupPath);
+    userConfigBackup = readFileSync(CONFIG_PATH, 'utf-8');
   }
-
   if (existsSync(SETTINGS_PATH)) {
-    const backupPath = SETTINGS_PATH + `.test_backup_${timestamp}`;
-    const content = readFileSync(SETTINGS_PATH, 'utf-8');
-    writeFileSync(backupPath, content);
-    backups.push(backupPath);
+    userSettingsBackup = readFileSync(SETTINGS_PATH, 'utf-8');
   }
-
-  return backups;
 }
 
-// 恢复备份
-function restoreFiles(backups) {
-  backups.forEach(backupPath => {
-    try {
-      unlinkSync(backupPath);
-    } catch (e) {
-      // 忽略错误
-    }
-  });
-}
-
-// 清理测试数据
-function cleanupTestData() {
-  if (existsSync(CONFIG_PATH)) {
+// 恢复用户原始文件
+function restoreUserFiles() {
+  // 恢复 accounts.json
+  if (userConfigBackup !== null) {
+    writeFileSync(CONFIG_PATH, userConfigBackup);
+    fs.chmodSync(CONFIG_PATH, 0o600);
+  } else if (existsSync(CONFIG_PATH)) {
     unlinkSync(CONFIG_PATH);
   }
-  if (existsSync(SETTINGS_PATH)) {
+
+  // 恢复 settings.json
+  if (userSettingsBackup !== null) {
+    writeFileSync(SETTINGS_PATH, userSettingsBackup);
+    fs.chmodSync(SETTINGS_PATH, 0o600);
+  } else if (existsSync(SETTINGS_PATH)) {
     unlinkSync(SETTINGS_PATH);
   }
+
+  // 清理测试目录
+  if (existsSync(TEST_DIR)) {
+    if (existsSync(TEST_CONFIG_PATH)) unlinkSync(TEST_CONFIG_PATH);
+    if (existsSync(TEST_SETTINGS_PATH)) unlinkSync(TEST_SETTINGS_PATH);
+    try {
+      // 尝试删除测试目录（如果为空）
+      const { rmdirSync } = require('fs');
+      rmdirSync(TEST_DIR);
+    } catch (e) {
+      // 忽略目录删除错误
+    }
+  }
+}
+
+// 创建测试环境
+function setupTestEnv() {
+  // 确保测试目录存在
+  if (!existsSync(TEST_DIR)) {
+    mkdirSync(TEST_DIR, { recursive: true, mode: 0o700 });
+  }
+
+  // 创建 ConfigManager 实例，但重写路径方法使用测试目录
+  const configManager = new ConfigManager();
+
+  // 重写路径方法，使用测试目录
+  const originalGetSettingsPath = configManager.getSettingsPath.bind(configManager);
+  configManager.getSettingsPath = () => TEST_SETTINGS_PATH;
+
+  // 重写 ensureConfigFile 使用测试目录
+  const originalEnsureConfigFile = configManager.ensureConfigFile.bind(configManager);
+  configManager.ensureConfigFile = function() {
+    if (!existsSync(TEST_DIR)) {
+      mkdirSync(TEST_DIR, { recursive: true, mode: 0o700 });
+    }
+    if (!existsSync(TEST_CONFIG_PATH)) {
+      this.save({ version: '1.1.0', accounts: [] }, TEST_CONFIG_PATH);
+      // 注意：这里需要修改 save 方法支持路径参数
+    }
+  };
+
+  // 重写 save 方法支持自定义路径
+  const originalSave = configManager.save.bind(configManager);
+  configManager.save = function(data, customPath) {
+    const path = customPath || TEST_CONFIG_PATH;
+    try {
+      writeFileSync(path, JSON.stringify(data, null, 2));
+      // 不修改权限，测试目录权限由父目录控制
+    } catch (error) {
+      console.error('保存配置文件失败:', error.message);
+      throw error;
+    }
+  };
+
+  // 重写 load 方法使用测试路径
+  const originalLoad = configManager.load.bind(configManager);
+  configManager.load = function() {
+    try {
+      const data = readFileSync(TEST_CONFIG_PATH, 'utf-8');
+      return JSON.parse(data);
+    } catch (error) {
+      return { version: '1.1.0', accounts: [] };
+    }
+  };
+
+  // 重写 saveSettings 方法使用测试路径
+  const originalSaveSettings = configManager.saveSettings.bind(configManager);
+  configManager.saveSettings = function(data) {
+    try {
+      // 确保测试目录存在
+      if (!existsSync(TEST_DIR)) {
+        mkdirSync(TEST_DIR, { recursive: true, mode: 0o700 });
+      }
+      writeFileSync(TEST_SETTINGS_PATH, JSON.stringify(data, null, 2));
+      // 不修改权限，测试目录权限由父目录控制
+    } catch (error) {
+      console.error('保存设置文件失败:', error.message);
+      throw error;
+    }
+  };
+
+  // 重写 loadSettings 方法使用测试路径
+  const originalLoadSettings = configManager.loadSettings.bind(configManager);
+  configManager.loadSettings = function() {
+    try {
+      const data = readFileSync(TEST_SETTINGS_PATH, 'utf-8');
+      return JSON.parse(data);
+    } catch (error) {
+      return {
+        api_key: "",
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 4096
+      };
+    }
+  };
+
+  return configManager;
 }
 
 // 断言函数
@@ -76,13 +170,11 @@ function assertNotExists(value, message) {
 async function runTests() {
   console.log('=== 模型配置功能测试 ===\n');
 
-  const backups = backupFiles();
+  // 备份用户原始文件
+  backupUserFiles();
 
   try {
-    // 清理测试数据
-    cleanupTestData();
-
-    const configManager = new ConfigManager();
+    const configManager = setupTestEnv();
 
     // 测试场景1: 只配置主模型
     console.log('测试 1: 只配置主模型');
@@ -97,7 +189,7 @@ async function runTests() {
     configManager.setCurrentAccount('test1');
     configManager.updateClaudeSettings(account1);
 
-    const settings1 = JSON.parse(readFileSync(SETTINGS_PATH, 'utf-8'));
+    const settings1 = JSON.parse(readFileSync(TEST_SETTINGS_PATH, 'utf-8'));
     assertEqual(settings1.env.ANTHROPIC_DEFAULT_SONNET_MODEL, 'claude-sonnet-4-5-20250929', 'Sonnet模型应正确设置');
     assertEqual(settings1.env.ANTHROPIC_DEFAULT_HAIKU_MODEL, 'claude-sonnet-4-5-20250929', 'Haiku模型应默认为主模型');
     assertEqual(settings1.env.ANTHROPIC_DEFAULT_OPUS_MODEL, 'claude-sonnet-4-5-20250929', 'Opus模型应默认为主模型');
@@ -117,7 +209,7 @@ async function runTests() {
     configManager.setCurrentAccount('test2');
     configManager.updateClaudeSettings(account2);
 
-    const settings2 = JSON.parse(readFileSync(SETTINGS_PATH, 'utf-8'));
+    const settings2 = JSON.parse(readFileSync(TEST_SETTINGS_PATH, 'utf-8'));
     assertEqual(settings2.env.ANTHROPIC_DEFAULT_SONNET_MODEL, 'claude-sonnet-4-5-20250929', 'Sonnet模型应正确设置');
     assertEqual(settings2.env.ANTHROPIC_DEFAULT_HAIKU_MODEL, 'claude-haiku-4-5-20251001', 'Haiku模型应使用配置值');
     assertEqual(settings2.env.ANTHROPIC_DEFAULT_OPUS_MODEL, 'claude-sonnet-4-5-20250929', 'Opus模型应默认为主模型');
@@ -138,7 +230,7 @@ async function runTests() {
     configManager.setCurrentAccount('test3');
     configManager.updateClaudeSettings(account3);
 
-    const settings3 = JSON.parse(readFileSync(SETTINGS_PATH, 'utf-8'));
+    const settings3 = JSON.parse(readFileSync(TEST_SETTINGS_PATH, 'utf-8'));
     assertEqual(settings3.env.ANTHROPIC_DEFAULT_SONNET_MODEL, 'claude-sonnet-4-5-20250929', 'Sonnet模型应正确设置');
     assertEqual(settings3.env.ANTHROPIC_DEFAULT_HAIKU_MODEL, 'claude-haiku-4-5-20251001', 'Haiku模型应使用配置值');
     assertEqual(settings3.env.ANTHROPIC_DEFAULT_OPUS_MODEL, 'claude-opus-4-5-20251101', 'Opus模型应使用配置值');
@@ -156,7 +248,7 @@ async function runTests() {
     configManager.setCurrentAccount('test4');
     configManager.updateClaudeSettings(account4);
 
-    const settings4 = JSON.parse(readFileSync(SETTINGS_PATH, 'utf-8'));
+    const settings4 = JSON.parse(readFileSync(TEST_SETTINGS_PATH, 'utf-8'));
     assertNotExists(settings4.env.ANTHROPIC_DEFAULT_SONNET_MODEL, '不应设置Sonnet模型');
     assertNotExists(settings4.env.ANTHROPIC_DEFAULT_HAIKU_MODEL, '不应设置Haiku模型');
     assertNotExists(settings4.env.ANTHROPIC_DEFAULT_OPUS_MODEL, '不应设置Opus模型');
@@ -166,7 +258,7 @@ async function runTests() {
 
     // 测试场景5: 验证 accounts.json 存储格式
     console.log('测试 5: 验证配置文件存储格式');
-    const accounts = JSON.parse(readFileSync(CONFIG_PATH, 'utf-8'));
+    const accounts = JSON.parse(readFileSync(TEST_CONFIG_PATH, 'utf-8'));
 
     const stored1 = accounts.accounts.find(a => a.name === 'test1');
     assertEqual(stored1.model, 'claude-sonnet-4-5-20250929', '场景1应存储主模型');
@@ -209,11 +301,9 @@ async function runTests() {
     console.error('测试失败:', error.message);
     process.exit(1);
   } finally {
-    // 恢复备份
-    restoreFiles(backups);
-    // 清理测试数据
-    cleanupTestData();
-    console.log('测试数据已清理');
+    // 恢复用户原始文件
+    restoreUserFiles();
+    console.log('测试数据已清理，用户配置文件已恢复');
   }
 }
 
