@@ -13,10 +13,16 @@
 
 ```bash
 # 使用 npm
-npm install -g claude-account-switcher
+npm install -g claude-account-switcher@latest
 
 # 或使用 pnpm
-pnpm install -g claude-account-switcher
+pnpm install -g claude-account-switcher@latest
+
+```
+
+## 直接运行
+```bash
+npx claude-account-switcher@latest 
 ```
 
 ---
