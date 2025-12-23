@@ -1,13 +1,11 @@
 name: Publish Package
 
 on:
-  push:
-    tags:
-      - 'v*'
-  workflow_dispatch:
+  release:        # 发 GitHub Release 时自动触发
+    types: [published]
 
 permissions:
-  id-token: write
+  id-token: write  # Required for OIDC
   contents: read
 
 jobs:
@@ -16,16 +14,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org'
-          cache: 'pnpm'
 
       - run: pnpm install --frozen-lockfile
       - run: pnpm test
