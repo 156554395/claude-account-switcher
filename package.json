@@ -9,9 +9,8 @@
   },
   "scripts": {
     "start": "node src/index.js",
-    "test": "node --test test/**/*.test.js",
-    "test:unit": "node --test test/unit/*.test.js",
-    "test:integration": "node --test test/integration/*.test.js"
+    "test": "node --test tests/**/*.test.js",
+    "test:unit": "node --test tests/unit/*.test.js"
   },
   "keywords": [
     "claude",
