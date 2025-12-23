@@ -150,7 +150,7 @@ function testClearEnvConfigNormal() {
   cm.getSettingsPath = originalSettingsPath;
 
   cleanupTestEnv();
-  console.log('✅ 通过 - 待实现 clearEnvConfig 方法');
+  console.log('✅ 通过');
 }
 
 // 测试 5: updateClaudeSettings - 只更新 env 配置
@@ -205,7 +205,7 @@ function testUpdateClaudeSettingsEnvOnly() {
   cm.getSettingsPath = originalSettingsPath;
 
   cleanupTestEnv();
-  console.log('✅ 通过 - 待更新 updateClaudeSettings 方法');
+  console.log('✅ 通过');
 }
 
 // 运行所有测试

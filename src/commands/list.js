@@ -30,9 +30,9 @@ export function listAccounts() {
     console.log(`${prefix} ${account.name}${isCurrent ? ' (当前)' : ''}`);
     console.log(`  Key:        ${maskApiKey(account.key)}`);
     console.log(`  URL:        ${account.url || '-'}`);
-    console.log(`  Model:      ${account.model || '-'}`);
-    console.log(`  Small:      ${account.smallModel || '-'}`);
-    console.log(`  Opus:       ${account.opusModel || '-'}`);
+    console.log(`  主模型:      ${account.model || '-'}`);
+    console.log(`  快速模型:    ${account.smallModel || '-'}`);
+    console.log(`  Opus模型:    ${account.opusModel || '-'}`);
 
     // 不是最后一个账号时,添加空行
     if (index < accounts.length - 1) {

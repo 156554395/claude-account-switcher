@@ -1,6 +1,6 @@
 // 配置文件管理器
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync, chmodSync, renameSync, readdirSync } from 'fs';
+import fs from 'fs';
 import { homedir } from 'os';
 import { join } from 'path';
 import { DEFAULT_CONFIG } from '../constants/defaults.js';
@@ -19,14 +19,14 @@ export class ConfigManager {
    */
   ensureConfigFile() {
     // 确保 ~/.claude 目录存在
-    if (!existsSync(CLAUDE_DIR)) {
-      mkdirSync(CLAUDE_DIR, { recursive: true, mode: 0o700 });
+    if (!fs.existsSync(CLAUDE_DIR)) {
+      fs.mkdirSync(CLAUDE_DIR, { recursive: true, mode: 0o700 });
     }
 
     // 确保配置文件存在
-    if (!existsSync(CONFIG_PATH)) {
+    if (!fs.existsSync(CONFIG_PATH)) {
       this.save(DEFAULT_CONFIG);
-      chmodSync(CONFIG_PATH, 0o600);
+      fs.chmodSync(CONFIG_PATH, 0o600);
     }
   }
 
@@ -36,7 +36,7 @@ export class ConfigManager {
    */
   load() {
     try {
-      const data = readFileSync(CONFIG_PATH, 'utf-8');
+      const data = fs.readFileSync(CONFIG_PATH, 'utf-8');
       return JSON.parse(data);
     } catch (error) {
       console.error('读取配置文件失败:', error.message);
@@ -50,8 +50,8 @@ export class ConfigManager {
    */
   save(data) {
     try {
-      writeFileSync(CONFIG_PATH, JSON.stringify(data, null, 2));
-      chmodSync(CONFIG_PATH, 0o600);
+      fs.writeFileSync(CONFIG_PATH, JSON.stringify(data, null, 2));
+      fs.chmodSync(CONFIG_PATH, 0o600);
     } catch (error) {
       console.error('保存配置文件失败:', error.message);
       throw error;
@@ -147,12 +147,12 @@ export class ConfigManager {
     const settingsPath = this.getSettingsPath();
 
     // 确保 ~/.claude 目录存在
-    if (!existsSync(CLAUDE_DIR)) {
-      mkdirSync(CLAUDE_DIR, { recursive: true, mode: 0o700 });
+    if (!fs.existsSync(CLAUDE_DIR)) {
+      fs.mkdirSync(CLAUDE_DIR, { recursive: true, mode: 0o700 });
     }
 
     // 如果设置文件不存在，创建一个默认的
-    if (!existsSync(settingsPath)) {
+    if (!fs.existsSync(settingsPath)) {
       const defaultSettings = {
         api_key: "",
         model: "claude-haiku-4-5-20251001",
@@ -170,7 +170,7 @@ export class ConfigManager {
     try {
       this.ensureSettingsFile();
       const settingsPath = this.getSettingsPath();
-      const data = readFileSync(settingsPath, 'utf-8');
+      const data = fs.readFileSync(settingsPath, 'utf-8');
       return JSON.parse(data);
     } catch (error) {
       console.error('读取设置文件失败:', error.message);
@@ -192,15 +192,15 @@ export class ConfigManager {
       const settingsPath = this.getSettingsPath();
 
       // 确保目录存在（不调用 ensureSettingsFile 避免循环）
-      if (!existsSync(CLAUDE_DIR)) {
-        mkdirSync(CLAUDE_DIR, { recursive: true, mode: 0o700 });
+      if (!fs.existsSync(CLAUDE_DIR)) {
+        fs.mkdirSync(CLAUDE_DIR, { recursive: true, mode: 0o700 });
       }
 
       // 创建备份
       this.createSettingsBackup();
 
-      writeFileSync(settingsPath, JSON.stringify(data, null, 2));
-      chmodSync(settingsPath, 0o600);
+      fs.writeFileSync(settingsPath, JSON.stringify(data, null, 2));
+      fs.chmodSync(settingsPath, 0o600);
     } catch (error) {
       console.error('保存设置文件失败:', error.message);
       // 尝试恢复备份
@@ -214,15 +214,15 @@ export class ConfigManager {
    */
   createSettingsBackup() {
     const settingsPath = this.getSettingsPath();
-    if (existsSync(settingsPath)) {
+    if (fs.existsSync(settingsPath)) {
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
       const backupPath = join(CLAUDE_DIR, `settings.backup.${timestamp}.json`);
       try {
         // 读取原文件内容
-        const originalData = readFileSync(settingsPath, 'utf-8');
+        const originalData = fs.readFileSync(settingsPath, 'utf-8');
         // 写入备份文件
-        writeFileSync(backupPath, originalData);
-        chmodSync(backupPath, 0o600);
+        fs.writeFileSync(backupPath, originalData);
+        fs.chmodSync(backupPath, 0o600);
       } catch (error) {
         console.warn('创建设置文件备份失败:', error.message);
       }
@@ -236,16 +236,16 @@ export class ConfigManager {
     try {
       const settingsPath = this.getSettingsPath();
       // 查找最新的备份文件
-      const backupFiles = readdirSync(CLAUDE_DIR)
+      const backupFiles = fs.readdirSync(CLAUDE_DIR)
         .filter(file => file.startsWith('settings.backup.') && file.endsWith('.json'))
         .sort()
         .reverse();
 
       if (backupFiles.length > 0) {
         const latestBackup = join(CLAUDE_DIR, backupFiles[0]);
-        const backupData = readFileSync(latestBackup, 'utf-8');
-        writeFileSync(settingsPath, backupData);
-        chmodSync(settingsPath, 0o600);
+        const backupData = fs.readFileSync(latestBackup, 'utf-8');
+        fs.writeFileSync(settingsPath, backupData);
+        fs.chmodSync(settingsPath, 0o600);
         console.log('已从备份恢复设置文件');
       }
     } catch (error) {
@@ -276,32 +276,32 @@ export class ConfigManager {
     try {
       const settingsPath = this.getSettingsPath();
 
-      if (!existsSync(settingsPath)) {
-        console.log('settings.json not found, using system environment variables');
+      if (!fs.existsSync(settingsPath)) {
+        console.log('settings.json 不存在，使用系统环境变量');
         return null;
       }
 
-      const data = readFileSync(settingsPath, 'utf-8');
+      const data = fs.readFileSync(settingsPath, 'utf-8');
       const settings = JSON.parse(data);
 
       if (!settings.env) {
-        console.log('No env configuration found in settings.json');
+        console.log('settings.json 中未找到 env 配置');
         return null;
       }
 
       return settings.env;
     } catch (error) {
       if (error.code === 'ENOENT') {
-        console.log('settings.json not found, using system environment variables');
+        console.log('settings.json 不存在，使用系统环境变量');
         return null;
       }
 
       if (error instanceof SyntaxError) {
-        console.log('settings.json is corrupted, please check the file');
+        console.log('settings.json 已损坏，请检查文件');
         return null;
       }
 
-      console.error('Error reading env configuration:', error.message);
+      console.error('读取 env 配置时出错:', error.message);
       return null;
     }
   }
@@ -313,32 +313,41 @@ export class ConfigManager {
   clearEnvConfig() {
     try {
       const settingsPath = this.getSettingsPath();
+      console.log('[DEBUG] clearEnvConfig - settingsPath:', settingsPath);
 
-      if (!existsSync(settingsPath)) {
-        console.log('settings.json not found, nothing to clear');
+      if (!fs.existsSync(settingsPath)) {
+        console.log('[DEBUG] settings.json 不存在，无需清除');
         return false;
       }
+      console.log('[DEBUG] 文件存在，继续执行...');
 
       // 创建备份
+      console.log('[DEBUG] 调用 createSettingsBackup...');
       this.createSettingsBackup();
+      console.log('[DEBUG] createSettingsBackup 完成');
 
       // 读取当前设置
-      const data = readFileSync(settingsPath, 'utf-8');
+      const data = fs.readFileSync(settingsPath, 'utf-8');
       const settings = JSON.parse(data);
+      console.log('[DEBUG] 读取设置:', JSON.stringify(settings, null, 2));
 
       // 移除 env 配置
       if (settings.env) {
         delete settings.env;
+        console.log('[DEBUG] 已移除 env');
       }
 
       // 保存修改后的设置
-      writeFileSync(settingsPath, JSON.stringify(settings, null, 2));
-      chmodSync(settingsPath, 0o600);
+      console.log('[DEBUG] 调用 writeFileSync...');
+      fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2));
+      console.log('[DEBUG] writeFileSync 完成');
+      fs.chmodSync(settingsPath, 0o600);
 
-      console.log('Environment configuration cleared successfully');
+      console.log('环境配置清除成功');
       return true;
     } catch (error) {
-      console.error('Error clearing env configuration:', error.message);
+      console.error('清除环境配置时出错:', error.message);
+      console.log('[DEBUG] 捕获到错误:', error.message);
 
       // 尝试恢复备份
       this.restoreSettingsBackup();

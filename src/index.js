@@ -9,6 +9,7 @@ import { switchAccount } from './commands/use.js';
 import { removeAccount } from './commands/remove.js';
 import { testAccountCommand } from './commands/test.js';
 import { showCurrentAccount } from './commands/current.js';
+import { clearEnvConfig } from './commands/clear.js';
 
 const program = new Command();
 
@@ -53,6 +54,12 @@ program
   .command('current')
   .description('显示当前账号信息 (读取 settings.json)')
   .action(showCurrentAccount);
+
+// clear 命令 - 清空环境配置
+program
+  .command('clear')
+  .description('清空 settings.json 中的环境配置')
+  .action(clearEnvConfig);
 
 // 解析命令行参数
 program.parse(process.argv);
