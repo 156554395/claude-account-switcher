@@ -24,17 +24,19 @@ describe('Clear Command', () => {
 
     // 清理所有现有备份文件，避免影响测试
     backupFiles = [];
-    const existingBackups = fs.readdirSync(CLAUDE_DIR)
-      .filter(file => file.startsWith('settings.backup.'));
+    if (fs.existsSync(CLAUDE_DIR)) {
+      const existingBackups = fs.readdirSync(CLAUDE_DIR)
+        .filter(file => file.startsWith('settings.backup.'));
 
-    existingBackups.forEach(file => {
-      const filePath = join(CLAUDE_DIR, file);
-      try {
-        fs.unlinkSync(filePath);
-      } catch (e) {
-        // 忽略删除错误
-      }
-    });
+      existingBackups.forEach(file => {
+        const filePath = join(CLAUDE_DIR, file);
+        try {
+          fs.unlinkSync(filePath);
+        } catch (e) {
+          // 忽略删除错误
+        }
+      });
+    }
   });
 
   afterEach(() => {
@@ -47,16 +49,18 @@ describe('Clear Command', () => {
     }
 
     // 清理测试创建的所有备份文件
-    const currentBackups = fs.readdirSync(CLAUDE_DIR)
-      .filter(file => file.startsWith('settings.backup.'));
+    if (fs.existsSync(CLAUDE_DIR)) {
+      const currentBackups = fs.readdirSync(CLAUDE_DIR)
+        .filter(file => file.startsWith('settings.backup.'));
 
-    currentBackups.forEach(file => {
-      try {
-        fs.unlinkSync(join(CLAUDE_DIR, file));
-      } catch (e) {
-        // 忽略删除错误
-      }
-    });
+      currentBackups.forEach(file => {
+        try {
+          fs.unlinkSync(join(CLAUDE_DIR, file));
+        } catch (e) {
+          // 忽略删除错误
+        }
+      });
+    }
   });
 
   it('should clear env configuration successfully', () => {
@@ -95,7 +99,9 @@ describe('Clear Command', () => {
       assert.deepEqual(updatedSettings.permissions, { allow: ["Edit(*)"] });
 
       // 验证备份文件创建
-      const backups = fs.readdirSync(CLAUDE_DIR).filter(f => f.startsWith('settings.backup.'));
+      const backups = fs.existsSync(CLAUDE_DIR)
+        ? fs.readdirSync(CLAUDE_DIR).filter(f => f.startsWith('settings.backup.'))
+        : [];
       assert.equal(backups.length, 1);
 
     } finally {
