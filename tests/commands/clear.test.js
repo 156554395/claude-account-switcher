@@ -2,7 +2,6 @@
 
 import { describe, it, beforeEach, afterEach } from 'node:test';
 import { strict as assert } from 'node:assert';
-import { ConfigManager } from '../../src/config/manager.js';
 import { clearEnvConfig } from '../../src/commands/clear.js';
 import fs from 'fs';
 import { homedir } from 'os';
@@ -10,11 +9,18 @@ import { join } from 'path';
 
 const CLAUDE_DIR = join(homedir(), '.claude');
 const SETTINGS_PATH = join(CLAUDE_DIR, 'settings.json');
-const BACKUP_DIR = CLAUDE_DIR;
+
+/**
+ * 确保测试目录存在
+ */
+function ensureTestDirectory() {
+  if (!fs.existsSync(CLAUDE_DIR)) {
+    fs.mkdirSync(CLAUDE_DIR, { recursive: true, mode: 0o700 });
+  }
+}
 
 describe('Clear Command', () => {
   let originalSettings = null;
-  let backupFiles = [];
 
   beforeEach(() => {
     // 保存原始设置文件
@@ -23,7 +29,6 @@ describe('Clear Command', () => {
     }
 
     // 清理所有现有备份文件，避免影响测试
-    backupFiles = [];
     if (fs.existsSync(CLAUDE_DIR)) {
       const existingBackups = fs.readdirSync(CLAUDE_DIR)
         .filter(file => file.startsWith('settings.backup.'));
@@ -76,6 +81,7 @@ describe('Clear Command', () => {
       permissions: { allow: ["Edit(*)"] }
     };
 
+    ensureTestDirectory();
     fs.writeFileSync(SETTINGS_PATH, JSON.stringify(testSettings, null, 2));
     fs.chmodSync(SETTINGS_PATH, 0o600);
 
@@ -117,6 +123,7 @@ describe('Clear Command', () => {
       permissions: { allow: ["Edit(*)"] }
     };
 
+    ensureTestDirectory();
     fs.writeFileSync(SETTINGS_PATH, JSON.stringify(testSettings, null, 2));
     fs.chmodSync(SETTINGS_PATH, 0o600);
 
@@ -172,6 +179,7 @@ describe('Clear Command', () => {
       }
     };
 
+    ensureTestDirectory();
     fs.writeFileSync(SETTINGS_PATH, JSON.stringify(testSettings, null, 2));
     fs.chmodSync(SETTINGS_PATH, 0o600);
 
