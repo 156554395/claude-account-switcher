@@ -5,7 +5,7 @@
 
 **🚀 快速切换 Claude API 账号，提升开发效率**
 
-一个用于管理多个 Claude API 账号的 CLI 工具，支持账号切换、API 测试、代理配置等功能。
+一个用于管理多个 Claude Code API 账号的 CLI 工具，支持账号切换、API 测试、代理配置等功能。
 
 ---
 
