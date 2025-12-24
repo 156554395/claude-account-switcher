@@ -2,7 +2,7 @@
 
 import { ConfigManager } from '../config/manager.js';
 import { testAccount } from '../utils/api-tester.js';
-import { printError, printSuccess, printSeparator, printInfo } from '../utils/formatter.js';
+import { printError, printSuccess, printSeparator } from '../utils/formatter.js';
 
 /**
  * 测试账号
@@ -88,7 +88,7 @@ export async function testAccountCommand(name) {
     let failCount = 0;
 
     // 遍历测试所有模型
-    for (const [key, testInfo] of modelTests) {
+    for (const [, testInfo] of modelTests) {
       const { model, url, accounts } = testInfo;
 
       console.log(`测试模型: ${model}`);

@@ -10,13 +10,23 @@ import { removeAccount } from './commands/remove.js';
 import { testAccountCommand } from './commands/test.js';
 import { showCurrentAccount } from './commands/current.js';
 import { clearEnvConfig } from './commands/clear.js';
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+// 获取版本号从 package.json
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const packageJsonPath = join(__dirname, '..', 'package.json');
+const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
+const version = packageJson.version;
 
 const program = new Command();
 
 program
   .name('claude-account')
   .description('Claude API 账号快速切换工具')
-  .version('1.1.0');
+  .version(version);
 
 // add 命令 - 添加账号 (交互式)
 program
