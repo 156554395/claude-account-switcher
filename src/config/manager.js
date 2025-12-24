@@ -313,41 +313,31 @@ export class ConfigManager {
   clearEnvConfig() {
     try {
       const settingsPath = this.getSettingsPath();
-      console.log('[DEBUG] clearEnvConfig - settingsPath:', settingsPath);
 
       if (!fs.existsSync(settingsPath)) {
-        console.log('[DEBUG] settings.json 不存在，无需清除');
         return false;
       }
-      console.log('[DEBUG] 文件存在，继续执行...');
 
       // 创建备份
-      console.log('[DEBUG] 调用 createSettingsBackup...');
       this.createSettingsBackup();
-      console.log('[DEBUG] createSettingsBackup 完成');
 
       // 读取当前设置
       const data = fs.readFileSync(settingsPath, 'utf-8');
       const settings = JSON.parse(data);
-      console.log('[DEBUG] 读取设置:', JSON.stringify(settings, null, 2));
 
       // 移除 env 配置
       if (settings.env) {
         delete settings.env;
-        console.log('[DEBUG] 已移除 env');
       }
 
       // 保存修改后的设置
-      console.log('[DEBUG] 调用 writeFileSync...');
       fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2));
-      console.log('[DEBUG] writeFileSync 完成');
       fs.chmodSync(settingsPath, 0o600);
 
       console.log('环境配置清除成功');
       return true;
     } catch (error) {
       console.error('清除环境配置时出错:', error.message);
-      console.log('[DEBUG] 捕获到错误:', error.message);
 
       // 尝试恢复备份
       this.restoreSettingsBackup();

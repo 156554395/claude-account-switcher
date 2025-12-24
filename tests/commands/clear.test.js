@@ -176,7 +176,8 @@ describe('Clear Command', () => {
 
     // 模拟文件系统错误
     const originalWriteFileSync = fs.writeFileSync;
-    fs.writeFileSync = () => { throw new Error('Test error'); };
+    const mockWriteFileSync = () => { throw new Error('Test error'); };
+    fs.writeFileSync = mockWriteFileSync;
 
     try {
       clearEnvConfig();
@@ -191,7 +192,10 @@ describe('Clear Command', () => {
 
     } finally {
       console.error = originalError;
-      fs.writeFileSync = originalWriteFileSync;
+      // 确保恢复原始的 writeFileSync
+      if (fs.writeFileSync === mockWriteFileSync) {
+        fs.writeFileSync = originalWriteFileSync;
+      }
     }
   });
 });
