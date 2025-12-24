@@ -25,6 +25,13 @@ export async function testAccountCommand(name) {
     // 收集所有需要测试的模型配置（去重）
     const modelTests = new Map(); // key: model|url, value: {model, url, accounts: []}
 
+    // 默认Claude模型（用于没有配置模型的账号）
+    const defaultModels = [
+      'claude-sonnet-4-5-20250929',  // 主模型
+      'claude-haiku-4-5-20251001',   // 小模型
+      'claude-opus-4-5-20251101'     // Opus模型
+    ];
+
     for (const account of accounts) {
       const mainModel = account.model;
       const smallModel = account.smallModel;
@@ -34,23 +41,40 @@ export async function testAccountCommand(name) {
       // 收集所有模型
       const models = [mainModel, smallModel, opusModel].filter(m => m);
 
-      for (const model of models) {
-        const key = `${model}|${url}`;
-        if (!modelTests.has(key)) {
-          modelTests.set(key, {
-            model,
-            url,
-            accounts: []
-          });
+      // 如果该账号没有配置任何模型，使用默认模型
+      if (models.length === 0) {
+        console.log(`⚠️  账号 '${account.name}' 未配置模型，将使用默认Claude模型进行测试`);
+
+        for (const model of defaultModels) {
+          const key = `${model}|${url}`;
+          if (!modelTests.has(key)) {
+            modelTests.set(key, {
+              model,
+              url,
+              accounts: []
+            });
+          }
+          modelTests.get(key).accounts.push(account.name);
         }
-        modelTests.get(key).accounts.push(account.name);
+      } else {
+        // 使用配置的模型
+        for (const model of models) {
+          const key = `${model}|${url}`;
+          if (!modelTests.has(key)) {
+            modelTests.set(key, {
+              model,
+              url,
+              accounts: []
+            });
+          }
+          modelTests.get(key).accounts.push(account.name);
+        }
       }
     }
 
-    // 异常处理: 没有配置模型
+    // 如果没有任何账号（理论上不会发生，因为前面已经检查过了）
     if (modelTests.size === 0) {
-      printError('没有配置任何模型');
-      console.log('\n提示: 请在添加账号时配置模型');
+      printError('没有可测试的模型');
       process.exit(1);
     }
 
@@ -74,9 +98,28 @@ export async function testAccountCommand(name) {
       console.log(`  应用于账号: ${uniqueAccounts.join(', ')}`);
 
       // 创建临时账号对象用于测试
+      let testKey = '';
+      if (accounts.length > 0 && accounts[0] !== 'default') {
+        const foundAccount = configManager.findAccount(accounts[0]);
+        if (foundAccount) {
+          testKey = foundAccount.key;
+        }
+      } else {
+        // 使用默认配置时，尝试从第一个账号获取key，或者提示用户
+        const allAccounts = configManager.getAccounts();
+        if (allAccounts.length > 0) {
+          testKey = allAccounts[0].key;
+        } else {
+          // 没有账号配置，需要提示用户
+          console.log('  ⚠️  警告: 没有可用的API Key，测试将跳过');
+          console.log('  提示: 请使用 claude-account add 添加账号并配置API Key');
+          continue; // 跳过当前测试
+        }
+      }
+
       const testAccountObj = {
         name: `model:${model}`,
-        key: accounts.length > 0 ? configManager.findAccount(accounts[0]).key : '',
+        key: testKey,
         url: url,
         model: model
       };
@@ -131,7 +174,69 @@ export async function testAccountCommand(name) {
   console.log(`\n测试账号: ${name}`);
   printSeparator(30);
 
-  // 异常处理: 测试过程中的错误
+  // 检查账号是否配置了模型
+  const accountModels = [account.model, account.smallModel, account.opusModel].filter(m => m);
+
+  if (accountModels.length === 0) {
+    // 账号没有配置模型，使用默认Claude模型测试
+    console.log(`⚠️  账号 '${name}' 未配置模型，将使用默认Claude模型进行测试`);
+
+    const defaultModels = [
+      'claude-sonnet-4-5-20251001',
+      'claude-haiku-4-5-20251001',
+      'claude-opus-4-5-20251001'
+    ];
+
+    console.log(`\n将测试 ${defaultModels.length} 个默认模型`);
+    printSeparator(40);
+    console.log();
+
+    let allSuccess = true;
+    let successCount = 0;
+    let failCount = 0;
+
+    for (const model of defaultModels) {
+      console.log(`测试模型: ${model}`);
+
+      try {
+        const testAccountObj = { ...account, model };
+        const result = await testAccount(testAccountObj);
+
+        if (result.success) {
+          console.log(`  ✓ 成功 - 响应时间: ${result.responseTime}ms`);
+          successCount++;
+        } else {
+          console.log(`  ✗ 失败 - ${result.message}`);
+          if (result.status) {
+            console.log(`    状态码: ${result.status}`);
+          }
+          failCount++;
+          allSuccess = false;
+        }
+      } catch (error) {
+        console.log(`  ✗ 异常 - ${error.message}`);
+        failCount++;
+        allSuccess = false;
+      }
+
+      console.log();
+    }
+
+    // 输出总结
+    printSeparator(40);
+    console.log(`\n测试结果: ${successCount} 成功, ${failCount} 失败`);
+
+    if (allSuccess) {
+      printSuccess('所有默认模型测试通过 ✓');
+    } else {
+      printError('部分默认模型测试失败 ✗');
+      process.exit(1);
+    }
+
+    return;
+  }
+
+  // 账号已配置模型，按原逻辑测试
   try {
     const result = await testAccount(account);
 
